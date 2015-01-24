@@ -1,0 +1,24 @@
+Squirrel
+	Retina
+		ERG
+		Cone
+		SCone
+		MCone
+		Rod
+		Horizontal
+		H1
+		H2
+		Bipolar
+		Amacrine
+		RGC
+Mouse
+	Retina
+		ERG
+		Cone
+		SCone
+		MCone
+		Rod
+		H1
+		Bipolar
+		Amacrine
+		RGC
