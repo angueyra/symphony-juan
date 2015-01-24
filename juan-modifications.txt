@@ -1,0 +1,24 @@
+Symphony modifications for Angueyra:
+
+	StartSymphony.m
+% Run the user-specific configuration function.
+up = userpath;
+up = regexprep(up, '[;:]$', ''); % Remove semicolon/colon at end of user path
+up = [up,'/symphony-juan'];%Mod by Angueyra
+	
+		
+	FigureHandler.m
+function moveWindow(obj)
+    set(obj.figureHandle(), 'position', obj.windowPos);
+end
+
+
+	ResponseFigureHandler.m
+if ~isempty(obj.deviceName)
+    set(obj.figureHandle, 'Name', [obj.protocolPlugin.displayName ': ' obj.deviceName ' ' obj.figureType]);
+end   
+obj.moveWindow();
+
+	add to path:
+LowPassFilter.m
+whithen.m
