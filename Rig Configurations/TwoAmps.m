@@ -1,9 +1,9 @@
-classdef OneAmp < AxopatchRigConfiguration
+classdef TwoAmps < AxopatchRigConfiguration
 % Created Nov_2014, Angueyra
 % Configuration of Angueyra's Rig in Li Lab
-% Single Amp and 3 LEDs
+% Double Amps (200B) and 2 LEDs
     properties (Constant)
-        displayName = 'OneAmp'
+        displayName = 'TwoAmps'
     end
     
     methods
@@ -11,9 +11,9 @@ classdef OneAmp < AxopatchRigConfiguration
         function createDevices(obj) 
             % Amps.
             obj.addAxopatchDevice('Amp1', 'ANALOG_OUT.0', 'ANALOG_IN.0', 'ANALOG_IN.1', 'ANALOG_IN.2');
+            obj.addAxopatchDevice('Amp2', 'ANALOG_OUT.1', 'ANALOG_IN.3', 'ANALOG_IN.4', 'ANALOG_IN.5');
 
             % LEDs
-            obj.addDevice('LED_590','ANALOG_OUT.1','');
             obj.addDevice('LED_530','ANALOG_OUT.2','');
             obj.addDevice('LED_455','ANALOG_OUT.3','');
             
