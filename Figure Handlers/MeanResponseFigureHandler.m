@@ -21,7 +21,7 @@ classdef MeanResponseFigureHandler < FigureHandler
         meanPlots   % array of structures to store the properties of each class of epoch.
         meanParamNames
         storedLineColor
-        windowPos=[0,0,560,380];
+        windowPos=[5,5,1300,390];%[0,0,560,380];
         lpf_freq=60;
     end
     
@@ -141,7 +141,7 @@ classdef MeanResponseFigureHandler < FigureHandler
                 % Baseline subtracted mean
                 meanPlot.plotHandle(1) = plot(obj.axesHandle(), (1:length(meanPlot.data)) / sampleRate, meanPlot.data, 'Color', whithen(obj.lineColor,0.5));
                 %Low Pass filtered version
-                lpfdata = LowPassFilter(meanPlot.data,obj.lpf_freq,1/sampleRate);
+                lpfdata = lowPassFilter(meanPlot.data,obj.lpf_freq,1/sampleRate);
                 meanPlot.plotHandle(2) = plot(obj.axesHandle(), (1:length(meanPlot.data)) / sampleRate, lpfdata, 'Color', obj.lineColor);
                 
                 obj.meanPlots(end + 1) = meanPlot;
@@ -154,7 +154,7 @@ classdef MeanResponseFigureHandler < FigureHandler
                 meanPlot.count = meanPlot.count + 1;
                 set(meanPlot.plotHandle(1), 'XData', (1:length(meanPlot.data)) / sampleRate, ...
                                          'YData', meanPlot.data);
-                lpfdata = LowPassFilter(meanPlot.data,obj.lpf_freq,1/sampleRate);
+                lpfdata = lowPassFilter(meanPlot.data,obj.lpf_freq,1/sampleRate);
                 set(meanPlot.plotHandle(2), 'XData', (1:length(meanPlot.data)) / sampleRate, ...
                                          'YData', lpfdata);
                 obj.meanPlots(i) = meanPlot;

@@ -21,7 +21,7 @@ classdef MeanVsEpochFigureHandler < FigureHandler
         startPt
         endPt
         plotHandle
-        windowPos=[565,380,560,350];
+        windowPos=[5,880,560,170];
     end
     
     methods

@@ -21,7 +21,7 @@ classdef VarianceVsEpochFigureHandler < FigureHandler
         startPt
         endPt
         plotHandle
-        windowPos=[565,0,560,350];
+        windowPos=[590,880,560,170];
     end
     
     methods

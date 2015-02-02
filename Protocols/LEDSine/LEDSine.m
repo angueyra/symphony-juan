@@ -15,7 +15,7 @@ classdef LEDSine < PulsedProtocol
         freq = 5
         phase = 0           
         wcontrast = 25          
-        mean = 2
+        mean = 4
         amp
     end
     
@@ -24,7 +24,6 @@ classdef LEDSine < PulsedProtocol
     end
     
     properties
-        amp2PulseAmplitude = 0
         numberOfAverages = uint16(5)
         interpulseInterval = 0
     end
@@ -73,46 +72,28 @@ classdef LEDSine < PulsedProtocol
                 obj.openFigure('Mean vs. Epoch', obj.amp, 'EndPt', obj.prePts);
                 obj.openFigure('Variance vs. Epoch', obj.amp, 'EndPt', obj.prePts);
             end
+            
+            % Set LED mean.
+            obj.setDeviceBackground(obj.led, obj.mean);
         end
         
         
-        function stim = ampStimulus(obj)
-            % Main amp stimulus.           
+        function stim = ledStimulus(obj)
+            % led stimulus           
             p = SineGenerator();
             
-            device = obj.rigConfig.deviceWithName(obj.amp);
+            device = obj.rigConfig.deviceWithName(obj.led);
             p.preTime = obj.preTime;
             p.stimTime = obj.stimTime;
             p.tailTime = obj.tailTime;
-%             p.mean = double(System.Convert.ToDouble(device.Background.Quantity));
-            p.mean = obj.mean;
+            p.mean = double(System.Convert.ToDouble(device.Background.Quantity));
+%             p.mean = obj.mean;
             p.freq = obj.freq;
             p.phase = obj.phase;
             p.wcontrast = obj.wcontrast;
             p.freq = obj.freq;
             p.sampleRate = obj.sampleRate;
-            p.units = char(device.Background.DisplayUnit);
-            
-            stim = p.generate();
-        end
-        
-        
-        function stim = amp2Stimulus(obj)
-            % Secondary amp stimulus.
-            p = SineGenerator();
-            
-            device = obj.rigConfig.deviceWithName(obj.amp2);
-            p.preTime = obj.preTime;
-            p.stimTime = obj.stimTime;
-            p.tailTime = obj.tailTime;
-%             p.mean = double(System.Convert.ToDouble(device.Background.Quantity));
-            p.mean = obj.mean;
-            p.freq = obj.freq;
-            p.phase = obj.phase;
-            p.wcontrast = obj.wcontrast;
-            p.freq = obj.freq;
-            p.sampleRate = obj.sampleRate;
-            p.units = char(device.Background.DisplayUnit);
+            p.units = char(obj.rigConfig.deviceWithName(obj.led).Background.DisplayUnit);
             
             stim = p.generate();
         end
@@ -120,20 +101,15 @@ classdef LEDSine < PulsedProtocol
         
         function stimuli = sampleStimuli(obj)
             % Return main amp stimulus for display in the edit parameters window.
-            stimuli{1} = obj.ampStimulus();
+            stimuli{1} = obj.ledStimulus();
         end
         
         
         function prepareEpoch(obj, epoch)            
             prepareEpoch@PulsedProtocol(obj, epoch);
             
-            % Add main amp stimulus.
-            epoch.addStimulus(obj.amp, obj.ampStimulus());
-            
-            % Add secondary amp stimulus if the rig config is two amp.
-            if obj.rigConfig.numMultiClampDevices() > 1
-                epoch.addStimulus(obj.amp2, obj.amp2Stimulus());
-            end
+            % Add led stimulus.
+            epoch.addStimulus(obj.led, obj.ledStimulus());
         end
         
         

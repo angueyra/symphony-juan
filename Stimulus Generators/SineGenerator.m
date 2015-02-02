@@ -54,10 +54,11 @@ classdef SineGenerator < StimulusGenerator
             
             data = ones(1, prePts + stimPts + tailPts) * obj.mean;
             data(prePts + 1:prePts + stimPts) = sinewave;
+            
+            
             measurements = Measurement.FromArray(data, obj.units);
             rate = Measurement(obj.sampleRate, 'Hz');
             output = OutputData(measurements, rate);
-            
             stim = RenderedStimulus(obj.identifier, obj.stimulusParameters, output);
         end
         

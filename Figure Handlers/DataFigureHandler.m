@@ -13,7 +13,7 @@ classdef DataFigureHandler < FigureHandler
         plotHandle
         deviceName
         lineColor
-        windowPos=[0,500,560,380]
+        windowPos=[5,425,1300,430]%[0,500,560,380]
     end
     
     methods

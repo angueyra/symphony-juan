@@ -20,5 +20,4 @@ end
 obj.moveWindow();
 
 	add to path:
-LowPassFilter.m
-whithen.m
+Utilities/whithen.m

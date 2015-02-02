@@ -1,4 +1,4 @@
-function degrees = deg2rad(radians)
-% function degrees = deg2rad(radians)
+function radians = deg2rad(degrees)
+% function radians = deg2rad(degrees)
 
-degrees = radians/(pi/180);
+radians = degrees*(pi/180);
