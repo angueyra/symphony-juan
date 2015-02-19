@@ -22,7 +22,7 @@ classdef MeanResponseFigureHandler < FigureHandler
         meanParamNames
         storedLineColor
         windowPos=[5,5,1300,390];%[0,0,560,380];
-        lpf_freq=60;
+        lpf_freq=50;
     end
     
     methods
@@ -142,7 +142,7 @@ classdef MeanResponseFigureHandler < FigureHandler
                 meanPlot.plotHandle(1) = plot(obj.axesHandle(), (1:length(meanPlot.data)) / sampleRate, meanPlot.data, 'Color', whithen(obj.lineColor,0.5));
                 %Low Pass filtered version
                 lpfdata = lowPassFilter(meanPlot.data,obj.lpf_freq,1/sampleRate);
-                meanPlot.plotHandle(2) = plot(obj.axesHandle(), (1:length(meanPlot.data)) / sampleRate, lpfdata, 'Color', obj.lineColor);
+                meanPlot.plotHandle(2) = plot(obj.axesHandle(), (1:length(meanPlot.data)) / sampleRate, lpfdata, 'Color', obj.lineColor,'LineWidth',2);
                 
                 obj.meanPlots(end + 1) = meanPlot;
             else
@@ -188,6 +188,7 @@ classdef MeanResponseFigureHandler < FigureHandler
             for i = 1:numel(plots)
                 plots(i).plotHandle = copyobj(obj.meanPlots(i).plotHandle, obj.axesHandle());
                 set(plots(i).plotHandle(1), 'Color', whithen(obj.storedLineColor,0.5));
+                 set(plots.plotHandle(1),'visible','off')
                 set(plots(i).plotHandle(2), 'Color', obj.storedLineColor);
             end
             

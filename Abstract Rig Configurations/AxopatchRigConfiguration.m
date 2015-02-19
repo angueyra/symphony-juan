@@ -1,4 +1,4 @@
-classdef AxopatchRigConfiguration < RiekeRigConfiguration
+classdef AxopatchRigConfiguration < LiLabRigConfiguration
     
     methods
         

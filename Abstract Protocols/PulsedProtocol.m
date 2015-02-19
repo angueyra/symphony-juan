@@ -1,7 +1,7 @@
 % Create a sub-class of this class to define a pulsed protocol.
 % A pulsed protocol is a protocol whose stimulus is best defined with pre, stim, and tail segments.
 
-classdef PulsedProtocol < RiekeProtocol
+classdef PulsedProtocol < LiLabProtocol
     
     properties (Abstract)
         preTime
@@ -23,7 +23,7 @@ classdef PulsedProtocol < RiekeProtocol
         
         function p = parameterProperty(obj, parameterName)
             % Call the base method to create the property object.
-            p = parameterProperty@RiekeProtocol(obj, parameterName);
+            p = parameterProperty@LiLabProtocol(obj, parameterName);
             
             switch parameterName
                 case {'preTime', 'stimTime', 'tailTime'}
@@ -34,7 +34,7 @@ classdef PulsedProtocol < RiekeProtocol
         
         function prepareRun(obj)
             % Call the base class method.
-            prepareRun@RiekeProtocol(obj);
+            prepareRun@LiLabProtocol(obj);
             
             % Set the oscilloscope trigger background to zero.
             if ~isempty(obj.rigConfig.deviceWithName('Oscilloscope_Trigger'))
@@ -45,7 +45,7 @@ classdef PulsedProtocol < RiekeProtocol
         
         function prepareEpoch(obj, epoch)
             % Call the base class method.
-            prepareEpoch@RiekeProtocol(obj, epoch);
+            prepareEpoch@LiLabProtocol(obj, epoch);
             
             % Add a stimulus to trigger the oscilliscope at the start of the epoch.
             if ~isempty(obj.rigConfig.deviceWithName('Oscilloscope_Trigger'))
