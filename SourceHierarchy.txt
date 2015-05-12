@@ -22,3 +22,6 @@ Mouse
 		Bipolar
 		Amacrine
 		RGC
+StemCells
+	Eyecups
+		Human

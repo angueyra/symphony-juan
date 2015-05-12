@@ -47,14 +47,14 @@ classdef ResistanceAndCapacitance < PulsedProtocol
             % Call the base method.
             [tf, msg] = isCompatibleWithRigConfig@PulsedProtocol(obj, rigConfig);
             
-            % Check if MATLAB has curve fitting toolbox.
-            if tf
-               v = ver;
-               if ~any(strcmp('Curve Fitting Toolbox', {v.Name}))
-                   tf = false;
-                   msg = 'This protocol requires Curve Fitting Toolbox.';
-               end
-            end
+%             % Check if MATLAB has curve fitting toolbox.
+%             if tf
+%                v = ver;
+%                if ~any(strcmp('Curve Fitting Toolbox', {v.Name}))
+%                    tf = false;
+%                    msg = 'This protocol requires Curve Fitting Toolbox.';
+%                end
+%             end
         end
         
         
@@ -114,12 +114,13 @@ classdef ResistanceAndCapacitance < PulsedProtocol
             fitTime = (fitStartPt:fitEndPt) * sampleInterval;
             fitData = data(fitStartPt:fitEndPt);
             
-            fitFunc = @(a,b,c,x) a*exp(-x/b)+c;
+            fitFunc = @(a,b,c,x) (a*exp(-x/b)+c);
             
             % Initial guess for a, b, and c.
             p0 = [max(fitData) - min(fitData), (max(fitTime) - min(fitTime)) / 2, mean(fitData)];
             
-            curve = fit(fitTime', fitData', fitFunc, 'StartPoint', p0);
+%             curve = fit(fitTime', fitData', fitFunc, 'StartPoint', p0);
+            curve = nlinfit(fitTime', fitData', fitFunc,p0);
             
             tauCharge = curve.b;
             currentSS = curve.c;

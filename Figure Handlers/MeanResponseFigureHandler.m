@@ -142,6 +142,7 @@ classdef MeanResponseFigureHandler < FigureHandler
                 meanPlot.plotHandle(1) = plot(obj.axesHandle(), (1:length(meanPlot.data)) / sampleRate, meanPlot.data, 'Color', whithen(obj.lineColor,0.5));
                 %Low Pass filtered version
                 lpfdata = lowPassFilter(meanPlot.data,obj.lpf_freq,1/sampleRate);
+                lpfdata = BandPassFilter(lpfdata,59,61,1/sampleRate);
                 meanPlot.plotHandle(2) = plot(obj.axesHandle(), (1:length(meanPlot.data)) / sampleRate, lpfdata, 'Color', obj.lineColor,'LineWidth',2);
                 
                 obj.meanPlots(end + 1) = meanPlot;
