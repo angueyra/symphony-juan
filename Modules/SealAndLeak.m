@@ -5,13 +5,12 @@
 classdef SealAndLeak < Module
     
     properties (Constant)
-        displayName = 'SealAndLeak Control'
+        displayName = 'SealAndLeak'
     end
     
     properties
         rigConfigChanged    % Rig config changed event listener.
         controls            % Struct containing UI element handles.
-        stage
     end
     
     methods
