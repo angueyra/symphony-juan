@@ -76,6 +76,10 @@ classdef LiLabProtocol < SymphonyProtocol
                 end
             end
             fprintf('Current T=%g\n',temp);
+            
+            trigger_device=obj.rigConfig.deviceWithName('Oscilloscope_Trigger');
+            epoch.getCoreEpoch().Stimuli.Remove(trigger_device);
+            
             % Add the current package hash.
 %             epoch.addParameter('gitHash', obj.gitHash);
         end
