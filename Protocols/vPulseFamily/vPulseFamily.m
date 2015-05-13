@@ -3,16 +3,19 @@ classdef vPulseFamily < PulsedProtocol
     properties (Constant)
         identifier = 'edu.washington.rieke.PulseFamily'
         version = 4
-        displayName = 'vPulse Family'
+        displayName = 'vDoublePulse Family'
     end
     
     properties
         amp
         preTime = 500
-        stimTime = 1000
+        stimTimeL = 2000
+        stimTimeR = 2000
         tailTime = 500
-        firstPulseSignal = 100
-        incrementPerPulse = 10
+        firstPulseSignalL = 100
+        incrementPerPulseL = 0
+        firstPulseSignalR = 100
+        incrementPerPulseR = 10
         pulsesInFamily = uint16(11)
     end
     
@@ -33,7 +36,7 @@ classdef vPulseFamily < PulsedProtocol
             p = parameterProperty@PulsedProtocol(obj, parameterName);
             
             switch parameterName
-                case {'firstPulseSignal', 'incrementPerPulse'}
+                case {'firstPulseSignalL', 'incrementPerPulseR','firstPulseSignalL', 'incrementPerPulseR'}
                     p.units = char(obj.rigConfig.deviceWithName(obj.amp).Background.DisplayUnit);
                 case 'amp2PulseSignal'
                     p.units = char(obj.rigConfig.deviceWithName(obj.amp2).Background.DisplayUnit);
@@ -68,18 +71,34 @@ classdef vPulseFamily < PulsedProtocol
             pulseSignal = obj.incrementPerPulse * (double(pulseNum) - 1) + obj.firstPulseSignal;
             
             % Main amp stimulus.
-            p = PulseGenerator();
+            pL = PulseGenerator();
             
             device = obj.rigConfig.deviceWithName(obj.amp);
-            p.preTime = obj.preTime;
-            p.stimTime = obj.stimTime;
-            p.tailTime = obj.tailTime;
-            p.mean = double(System.Convert.ToDouble(device.Background.Quantity));
-            p.amplitude = pulseSignal - p.mean;
-            p.sampleRate = obj.sampleRate;
-            p.units = char(device.Background.DisplayUnit);
+            pL.preTime = obj.preTime;
+            pL.stimTimeL = obj.stimTime;
+            pL.tailTime = obj.tailTime;
+            pL.mean = double(System.Convert.ToDouble(device.Background.Quantity));
+            pL.amplitude = pulseSignal - p.mean;
+            pL.sampleRate = obj.sampleRate;
+            pL.units = char(device.Background.DisplayUnit);
             
-            stim = p.generate();
+            stimL = pL.generate();
+            
+            % Main amp stimulus.
+            pR = PulseGenerator();
+            
+            device = obj.rigConfig.deviceWithName(obj.amp);
+            pR.preTime = obj.preTime;
+            pR.stimTime = obj.stimTime;
+            pR.tailTime = obj.tailTime;
+            pR.mean = double(System.Convert.ToDouble(device.Background.Quantity));
+            pR.amplitude = pulseSignal - p.mean;
+            pR.sampleRate = obj.sampleRate;
+            pR.units = char(device.Background.DisplayUnit);
+            
+            stimR = pR.generate();
+            
+            stim = stimL + stimR;
         end
         
         
