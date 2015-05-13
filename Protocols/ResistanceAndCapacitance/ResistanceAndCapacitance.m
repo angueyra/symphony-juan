@@ -119,8 +119,8 @@ classdef ResistanceAndCapacitance < PulsedProtocol
             % Initial guess for a, b, and c.
             p0 = [max(fitData) - min(fitData), (max(fitTime) - min(fitTime)) / 2, mean(fitData)];
             
-%             curve = fit(fitTime', fitData', fitFunc, 'StartPoint', p0);
-            curve = nlinfit(fitTime', fitData', fitFunc,p0);
+            curve = fit(fitTime', fitData', fitFunc, 'StartPoint', p0);
+%             curve = nlinfit(fitTime', fitData', fitFunc,p0);
             
             tauCharge = curve.b;
             currentSS = curve.c;
