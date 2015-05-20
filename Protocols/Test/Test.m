@@ -1,4 +1,4 @@
-classdef Test < PulsedProtocol
+classdef Test < AutoRCProtocol
     
     properties (Constant)
         identifier = 'angueyra.Test'
@@ -11,7 +11,7 @@ classdef Test < PulsedProtocol
         preTime = 50
         stimTime = 500
         tailTime = 50
-        pulseAmplitude = 10
+        pulseAmplitude = -50
     end
     
     properties (Dependent, SetAccess = private)
@@ -20,7 +20,7 @@ classdef Test < PulsedProtocol
     
     properties
         amp2PulseAmplitude = 0
-        numberOfAverages = uint16(5)
+        numberOfAverages = uint16(3)
         interpulseInterval = 0
     end
     
@@ -28,7 +28,7 @@ classdef Test < PulsedProtocol
         
         function p = parameterProperty(obj, parameterName)
             % Call the base method to create the property object.
-            p = parameterProperty@PulsedProtocol(obj, parameterName);
+            p = parameterProperty@AutoRCProtocol(obj, parameterName);
             
             switch parameterName
                 case 'pulseAmplitude'
@@ -42,9 +42,9 @@ classdef Test < PulsedProtocol
         
         
         function prepareRun(obj)
-                       
+            
             % Call the base method.
-            prepareRun@PulsedProtocol(obj);
+            prepareRun@AutoRCProtocol(obj);
             
             % Open figure handlers.
             if obj.rigConfig.numMultiClampDevices() > 1
@@ -102,22 +102,31 @@ classdef Test < PulsedProtocol
         end
         
         
-        function prepareEpoch(obj, epoch)            
-            prepareEpoch@PulsedProtocol(obj, epoch);
-            
-            % Add main amp stimulus.
-            epoch.addStimulus(obj.amp, obj.ampStimulus());
-            
-            % Add secondary amp stimulus if the rig config is two amp.
-            if obj.rigConfig.numMultiClampDevices() > 1
-                epoch.addStimulus(obj.amp2, obj.amp2Stimulus());
+        
+        function prepareEpoch(obj, epoch)
+            prepareEpoch@AutoRCProtocol(obj, epoch);
+            if obj.addedRCEpoch
+                
+                % Do nothing?
+            else
+                % Add protocol epoch
+%                 prepareEpoch@PulsedProtocol(obj, epoch);
+                
+                % Add main amp stimulus.
+                epoch.addStimulus(obj.amp, obj.ampStimulus());
+                
+                % Add secondary amp stimulus if the rig config is two amp.
+                if obj.rigConfig.numMultiClampDevices() > 1
+                    epoch.addStimulus(obj.amp2, obj.amp2Stimulus());
+                end
             end
         end
+
         
         
         function queueEpoch(obj, epoch)            
             % Call the base method to queue the actual epoch.
-            queueEpoch@PulsedProtocol(obj, epoch);
+            queueEpoch@AutoRCProtocol(obj, epoch);
             
             % Queue the inter-pulse interval after queuing the epoch.
             if obj.interpulseInterval > 0
@@ -128,7 +137,7 @@ classdef Test < PulsedProtocol
         
         function keepQueuing = continueQueuing(obj)
             % Check the base class method to make sure the user hasn't paused or stopped the protocol.
-            keepQueuing = continueQueuing@PulsedProtocol(obj);
+            keepQueuing = continueQueuing@AutoRCProtocol(obj);
             
             % Keep queuing until the requested number of averages have been queued.
             if keepQueuing
@@ -139,7 +148,7 @@ classdef Test < PulsedProtocol
         
         function keepGoing = continueRun(obj)
             % Check the base class method to make sure the user hasn't paused or stopped the protocol.
-            keepGoing = continueRun@PulsedProtocol(obj);
+            keepGoing = continueRun@AutoRCProtocol(obj);
             
             % Keep going until the requested number of averages have been completed.
             if keepGoing
