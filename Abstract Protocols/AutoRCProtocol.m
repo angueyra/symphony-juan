@@ -10,7 +10,7 @@ classdef AutoRCProtocol < PulsedProtocol
         RCstimTime = 30
         RCtailTime = 15
         RCpulseAmplitude = 5
-        RCnumberOfAverages = 2
+        RCnumberOfAverages = 1
         RCamp2PulseAmplitude = 0
         RCinterpulseInterval = 0
     end
