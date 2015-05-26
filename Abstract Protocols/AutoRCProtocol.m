@@ -10,7 +10,7 @@ classdef AutoRCProtocol < PulsedProtocol
         RCstimTime = 30
         RCtailTime = 15
         RCpulseAmplitude = 5
-        RCnumberOfAverages = 1
+        RCnumberOfAverages = 2
         RCamp2PulseAmplitude = 0
         RCinterpulseInterval = 0
     end
@@ -34,9 +34,10 @@ classdef AutoRCProtocol < PulsedProtocol
         
         function prepareRun(obj)
             prepareRun@PulsedProtocol(obj);
-            fprintf('Made it to prepareRun AutoRC!\n')
             if obj.autoRC
+                obj.addedRCEpoch = true;
 				% Open RC figure
+                obj.openFigure('AutoRC', obj.amp);
 			end
         end
         
@@ -58,43 +59,32 @@ classdef AutoRCProtocol < PulsedProtocol
         end
         
         
-%         function stim = amp2Stimulus(obj)
-%             % Secondary amp stimulus.
-%             p = PulseGenerator();
-%             
-%             device = obj.rigConfig.deviceWithName(obj.amp2);
-%             p.preTime = obj.RCpreTime;
-%             p.stimTime = obj.RCstimTime;
-%             p.tailTime = obj.RCtailTime;
-%             p.mean = double(System.Convert.ToDouble(device.Background.Quantity));
-%             p.amplitude = obj.RCamp2PulseAmplitude;
-%             p.sampleRate = obj.RCsampleRate;
-%             p.units = char(device.Background.DisplayUnit);
-%             
-%             stim = p.generate();
-%         end
-        
-        
-%         function stimuli = sampleStimuli(obj)
-%             % Return main amp stimulus for display in the edit parameters window.
-%             stimuli{1} = obj.ampStimulus();
-%         end
+        function stim = RC2Stimulus(obj)
+            % Secondary amp stimulus.
+            p = PulseGenerator();
+            
+            device = obj.rigConfig.deviceWithName(obj.amp2);
+            p.preTime = obj.RCpreTime;
+            p.stimTime = obj.RCstimTime;
+            p.tailTime = obj.RCtailTime;
+            p.mean = double(System.Convert.ToDouble(device.Background.Quantity));
+            p.amplitude = obj.RCamp2PulseAmplitude;
+            p.sampleRate = obj.RCsampleRate;
+            p.units = char(device.Background.DisplayUnit);
+            
+            stim = p.generate();
+        end
         
         
         function prepareEpoch(obj, epoch)            
-            
-
-            if obj.autoRC && obj.numEpochsQueued < obj.RCnumberOfAverages
+            if obj.addedRCEpoch && obj.numEpochsQueued < obj.RCnumberOfAverages
                 prepareEpoch@PulsedProtocol(obj, epoch);
-				% Add RC epoch
-				obj.addedRCEpoch = true;
-                
-                % Add main amp stimulus.
+                % Add RC epoch
+                epoch.addParameter('RCepoch', 1);
                 epoch.addStimulus(obj.amp, obj.RCStimulus());
-                fprintf('added RCstim\n')
                 % Add secondary amp stimulus if the rig config is two amp.
                 if obj.rigConfig.numMultiClampDevices() > 1
-                    epoch.RCStimulus(obj.amp2, obj.amp2Stimulus());
+                    epoch.RCStimulus(obj.amp2, obj.RC2Stimulus());
                 end
 			else
 				obj.addedRCEpoch = false;
@@ -105,21 +95,19 @@ classdef AutoRCProtocol < PulsedProtocol
         function queueEpoch(obj, epoch)            
             % Call the base method to queue the actual epoch.
             queueEpoch@PulsedProtocol(obj, epoch);
-            
             % Queue the inter-pulse interval after queuing the epoch.
             if obj.interpulseInterval > 0
                 obj.queueInterval(obj.interpulseInterval);
             end
         end
         
-        
+
         function keepQueuing = continueQueuing(obj)
             % Check the base class method to make sure the user hasn't paused or stopped the protocol.
             keepQueuing = continueQueuing@PulsedProtocol(obj);
-            
             % Keep queuing until the requested number of averages have been queued.
             if keepQueuing
-                keepQueuing = obj.numEpochsQueued < obj.numberOfAverages;
+                keepQueuing = obj.numEpochsQueued < obj.RCnumberOfAverages+obj.numberOfAverages;
             end
         end
         
@@ -130,7 +118,7 @@ classdef AutoRCProtocol < PulsedProtocol
             
             % Keep going until the requested number of averages have been completed.
             if keepGoing
-                keepGoing = obj.numEpochsCompleted < obj.numberOfAverages;
+                keepGoing = obj.numEpochsCompleted < obj.RCnumberOfAverages+obj.numberOfAverages;
             end
         end
         

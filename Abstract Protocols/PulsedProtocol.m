@@ -47,18 +47,26 @@ classdef PulsedProtocol < LiLabProtocol
             % Call the base class method.
             prepareEpoch@LiLabProtocol(obj, epoch);
             
-            % Add a stimulus to trigger the oscilliscope at the start of the epoch.
+%             Add a stimulus to trigger the oscilliscope at the start of the epoch.
             if ~isempty(obj.rigConfig.deviceWithName('Oscilloscope_Trigger'))
                 p = PulseGenerator();
-                
-                p.preTime = 0;
-                p.stimTime = 1;
-                p.tailTime = obj.preTime + obj.stimTime + obj.tailTime - 1;
-                p.amplitude = 1;
-                p.mean = 0;
-                p.sampleRate = obj.sampleRate;
-                p.units = Symphony.Core.Measurement.UNITLESS;
-                
+                if obj.addedRCEpoch
+                    p.preTime = 0;
+                    p.stimTime = 1;
+                    p.tailTime = obj.RCpreTime + obj.RCstimTime + obj.RCtailTime - 1;
+                    p.amplitude = 1;
+                    p.mean = 0;
+                    p.sampleRate = obj.sampleRate;
+                    p.units = Symphony.Core.Measurement.UNITLESS;
+                else
+                    p.preTime = 0;
+                    p.stimTime = 1;
+                    p.tailTime = obj.preTime + obj.stimTime + obj.tailTime - 1;
+                    p.amplitude = 1;
+                    p.mean = 0;
+                    p.sampleRate = obj.sampleRate;
+                    p.units = Symphony.Core.Measurement.UNITLESS;
+                end
                 epoch.addStimulus('Oscilloscope_Trigger', p.generate());
             end
         end
