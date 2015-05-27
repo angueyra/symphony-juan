@@ -21,7 +21,8 @@ classdef AutoRCFigureHandler < FigureHandler
         meanPlots   % array of structures to store the properties of each class of epoch.
         meanParamNames
         storedLineColor
-        windowPos=[858   288   300   150]
+%         windowPos=[858   288   300   150] % laptop
+        windowPos=[1320         305         364         200] %rig pc
         lpf_freq=50;
     end
     

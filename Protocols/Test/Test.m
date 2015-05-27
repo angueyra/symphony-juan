@@ -57,7 +57,7 @@ classdef Test < AutoRCProtocol
 %                 obj.openFigure('Stim', obj.amp);
                 obj.openFigure('Mean Response', obj.amp);
                 obj.openFigure('Mean vs. Epoch', obj.amp, 'EndPt', obj.prePts);
-%                 obj.openFigure('Variance vs. Epoch', obj.amp, 'EndPt', obj.prePts);
+                obj.openFigure('Variance vs. Epoch', obj.amp, 'EndPt', obj.prePts);
             end
         end
         

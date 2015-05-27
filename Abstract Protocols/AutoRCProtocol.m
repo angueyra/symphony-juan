@@ -81,6 +81,14 @@ classdef AutoRCProtocol < PulsedProtocol
                 prepareEpoch@PulsedProtocol(obj, epoch);
                 % Add RC epoch
                 epoch.addParameter('RCepoch', 1);
+                epoch.addParameter('RCpreTime', obj.RCpreTime);
+                epoch.addParameter('RCstimTime', obj.RCstimTime);
+                epoch.addParameter('RCtailTime', obj.RCtailTime);
+                epoch.addParameter('RCpulseAmplitude', obj.RCpulseAmplitude);
+                epoch.addParameter('RCnumberOfAverages', obj.RCnumberOfAverages);
+                epoch.addParameter('RCamp2PulseAmplitude', obj.RCamp2PulseAmplitude);
+                epoch.addParameter('RCinterpulseInterval', obj.RCinterpulseInterval);
+                
                 epoch.addStimulus(obj.amp, obj.RCStimulus());
                 % Add secondary amp stimulus if the rig config is two amp.
                 if obj.rigConfig.numMultiClampDevices() > 1
@@ -88,6 +96,7 @@ classdef AutoRCProtocol < PulsedProtocol
                 end
 			else
 				obj.addedRCEpoch = false;
+%                 epoch.addParameter('RCnumberOfAverages', obj.RCnumberOfAverages);
             end
         end
         

@@ -13,8 +13,8 @@ classdef DataFigureHandler < FigureHandler
         plotHandle
         deviceName
         lineColor
-%         windowPos=[5,425,1300,430]%[0,500,560,380]
-        windowPos=[0,400,560,210]
+        windowPos=[5,425,1300,430]%[0,500,560,380]
+%         windowPos=[0,400,560,210]
     end
     
     methods
@@ -71,8 +71,13 @@ classdef DataFigureHandler < FigureHandler
                 end
             end
 %             set(get(obj.axesHandle(), 'Title'), 'String', ['Epoch #' num2str(obj.protocolPlugin.numEpochsCompleted) paramsText]);
+            if  isfield(epochParams,'RCnumberOfAverages')
+                nEpCorrection=epochParams.RCnumberOfAverages;
+            else
+                nEpCorrection=0;
+            end
             set(get(obj.axesHandle(), 'Title'), 'String', sprintf('Epoch %g of %g %s',...
-                (obj.protocolPlugin.numEpochsCompleted),...
+                (obj.protocolPlugin.numEpochsCompleted-nEpCorrection),...
                 (obj.protocolPlugin.numberOfAverages),...
                 paramsText));
             xlabel(obj.axesHandle(), 'time (s)');
