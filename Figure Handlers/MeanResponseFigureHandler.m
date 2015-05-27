@@ -21,7 +21,8 @@ classdef MeanResponseFigureHandler < FigureHandler
         meanPlots   % array of structures to store the properties of each class of epoch.
         meanParamNames
         storedLineColor
-        windowPos=[5,5,1300,390];%[0,0,560,380];
+%         windowPos=[5,5,1300,390];%[0,0,560,380];
+        windowPos=[0,120,560,250]
         lpf_freq=50;
     end
     
@@ -98,85 +99,87 @@ classdef MeanResponseFigureHandler < FigureHandler
         
         
         function handleEpoch(obj, epoch)
-            if isempty(obj.deviceName)
-                % Use the first device response found if no device name is specified.
-                [responseData, sampleRate, units] = epoch.response();
-            else
-                [responseData, sampleRate, units] = epoch.response(obj.deviceName);
-            end
-            
-            % Get the parameters for this "class" of epoch.
-            % An epoch class is defined by a set of parameter values.
-            if isempty(obj.meanParamNames)
-                % Automatically detect the set of parameters.
-                epochParams = obj.protocolPlugin.epochSpecificParameters(epoch);
-            else
-                % The protocol has specified which parameters to use.
-                for i = 1:length(obj.meanParamNames)
-                    epochParams.(obj.meanParamNames{i}) = epoch.getParameter(obj.meanParamNames{i});
+            if ~epoch.containsParameter('RCepoch')%ignore AutoRC epochs
+                if isempty(obj.deviceName)
+                    % Use the first device response found if no device name is specified.
+                    [responseData, sampleRate, units] = epoch.response();
+                else
+                    [responseData, sampleRate, units] = epoch.response(obj.deviceName);
                 end
-            end
-            
-            % Check if we have existing data for this class of epoch.
-            meanPlot = struct([]);
-            for i = 1:numel(obj.meanPlots)
-                if isequal(obj.meanPlots(i).params, epochParams)
-                    meanPlot = obj.meanPlots(i);
-                    break;
+
+                % Get the parameters for this "class" of epoch.
+                % An epoch class is defined by a set of parameter values.
+                if isempty(obj.meanParamNames)
+                    % Automatically detect the set of parameters.
+                    epochParams = obj.protocolPlugin.epochSpecificParameters(epoch);
+                else
+                    % The protocol has specified which parameters to use.
+                    for i = 1:length(obj.meanParamNames)
+                        epochParams.(obj.meanParamNames{i}) = epoch.getParameter(obj.meanParamNames{i});
+                    end
                 end
-            end
-            
-            baselineSub=@(x,stpt,endpt)(x-mean(x(stpt:endpt)));
-            
-            if isempty(meanPlot)
-                % This is the first epoch of this class to be plotted.
-                meanPlot = {};
-                meanPlot.params = epochParams;
-%                 meanPlot.data = responseData;
-                meanPlot.data = baselineSub(responseData,1,epoch.parameters.preTime/1e3*epoch.parameters.sampleRate);
-                meanPlot.sampleRate = sampleRate;
-                meanPlot.units = units;
-                meanPlot.count = 1;                                              
-                hold(obj.axesHandle(), 'on');
-                % Baseline subtracted mean
-                meanPlot.plotHandle(1) = plot(obj.axesHandle(), (1:length(meanPlot.data)) / sampleRate, meanPlot.data, 'Color', whithen(obj.lineColor,0.5));
-                %Low Pass filtered version
-                lpfdata = lowPassFilter(meanPlot.data,obj.lpf_freq,1/sampleRate);
-                lpfdata = bandPassFilter(lpfdata,59,61,1/sampleRate);
-                meanPlot.plotHandle(2) = plot(obj.axesHandle(), (1:length(meanPlot.data)) / sampleRate, lpfdata, 'Color', obj.lineColor,'LineWidth',2);
-                
-                obj.meanPlots(end + 1) = meanPlot;
-            else
-                % This class of epoch has been seen before, add the current response to the mean.
-                % TODO: Adjust response data to the same sample rate and unit as previous epochs if needed.
-                % TODO: if the length of data is varying then the mean will not be correct beyond the min length.
-%                 meanPlot.data = (meanPlot.data * meanPlot.count + responseData) / (meanPlot.count + 1);
-                meanPlot.data = (meanPlot.data * meanPlot.count + baselineSub(responseData,1,epoch.parameters.preTime/1e3*epoch.parameters.sampleRate)) / (meanPlot.count + 1);
-                meanPlot.count = meanPlot.count + 1;
-                set(meanPlot.plotHandle(1), 'XData', (1:length(meanPlot.data)) / sampleRate, ...
-                                         'YData', meanPlot.data);
-                lpfdata = lowPassFilter(meanPlot.data,obj.lpf_freq,1/sampleRate);
-                set(meanPlot.plotHandle(2), 'XData', (1:length(meanPlot.data)) / sampleRate, ...
-                                         'YData', lpfdata);
-                obj.meanPlots(i) = meanPlot;
-            end
-            
-            % Update the y axis with the units of the response.
-            ylabel(obj.axesHandle(), units);
-            
-            if isempty(epochParams)
-                titleString = 'All epochs';
-            else
-                paramNames = fieldnames(epochParams);
-                titleString = ['Grouped by ' humanReadableParameterName(paramNames{1})];
-                for i = 2:length(paramNames) - 1
-                    titleString = [titleString ', ' humanReadableParameterName(paramNames{i})];
+
+                % Check if we have existing data for this class of epoch.
+                meanPlot = struct([]);
+                for i = 1:numel(obj.meanPlots)
+                    if isequal(obj.meanPlots(i).params, epochParams)
+                        meanPlot = obj.meanPlots(i);
+                        break;
+                    end
                 end
-                if length(paramNames) > 1
-                    titleString = [titleString ' and ' humanReadableParameterName(paramNames{end})];
+
+                baselineSub=@(x,stpt,endpt)(x-mean(x(stpt:endpt)));
+
+                if isempty(meanPlot)
+                    % This is the first epoch of this class to be plotted.
+                    meanPlot = {};
+                    meanPlot.params = epochParams;
+    %                 meanPlot.data = responseData;
+                    meanPlot.data = baselineSub(responseData,1,epoch.parameters.preTime/1e3*epoch.parameters.sampleRate);
+                    meanPlot.sampleRate = sampleRate;
+                    meanPlot.units = units;
+                    meanPlot.count = 1;                                              
+                    hold(obj.axesHandle(), 'on');
+                    % Baseline subtracted mean
+                    meanPlot.plotHandle(1) = plot(obj.axesHandle(), (1:length(meanPlot.data)) / sampleRate, meanPlot.data, 'Color', whithen(obj.lineColor,0.5));
+                    %Low Pass filtered version
+                    lpfdata = lowPassFilter(meanPlot.data,obj.lpf_freq,1/sampleRate);
+                    lpfdata = BandPassFilter(lpfdata,59,61,1/sampleRate);
+                    meanPlot.plotHandle(2) = plot(obj.axesHandle(), (1:length(meanPlot.data)) / sampleRate, lpfdata, 'Color', obj.lineColor,'LineWidth',2);
+
+                    obj.meanPlots(end + 1) = meanPlot;
+                else
+                    % This class of epoch has been seen before, add the current response to the mean.
+                    % TODO: Adjust response data to the same sample rate and unit as previous epochs if needed.
+                    % TODO: if the length of data is varying then the mean will not be correct beyond the min length.
+    %                 meanPlot.data = (meanPlot.data * meanPlot.count + responseData) / (meanPlot.count + 1);
+                    meanPlot.data = (meanPlot.data * meanPlot.count + baselineSub(responseData,1,epoch.parameters.preTime/1e3*epoch.parameters.sampleRate)) / (meanPlot.count + 1);
+                    meanPlot.count = meanPlot.count + 1;
+                    set(meanPlot.plotHandle(1), 'XData', (1:length(meanPlot.data)) / sampleRate, ...
+                                             'YData', meanPlot.data);
+                    lpfdata = lowPassFilter(meanPlot.data,obj.lpf_freq,1/sampleRate);
+                    set(meanPlot.plotHandle(2), 'XData', (1:length(meanPlot.data)) / sampleRate, ...
+                                             'YData', lpfdata);
+                    obj.meanPlots(i) = meanPlot;
                 end
+
+                % Update the y axis with the units of the response.
+                ylabel(obj.axesHandle(), units);
+
+                if isempty(epochParams)
+                    titleString = 'All epochs';
+                else
+                    paramNames = fieldnames(epochParams);
+                    titleString = ['Grouped by ' humanReadableParameterName(paramNames{1})];
+                    for i = 2:length(paramNames) - 1
+                        titleString = [titleString ', ' humanReadableParameterName(paramNames{i})];
+                    end
+                    if length(paramNames) > 1
+                        titleString = [titleString ' and ' humanReadableParameterName(paramNames{end})];
+                    end
+                end
+                title(obj.axesHandle(), titleString);
             end
-            title(obj.axesHandle(), titleString);
         end
         
         
