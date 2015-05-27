@@ -1,9 +1,9 @@
-classdef vPulse < PulsedProtocol
+classdef vPulse < AutoRCProtocol
     
     properties (Constant)
         identifier = 'edu.washington.rieke.Pulse'
         version = 4
-        displayName = 'Pulse'
+        displayName = 'vPulse'
     end
     
     properties
@@ -43,7 +43,7 @@ classdef vPulse < PulsedProtocol
         
         function prepareRun(obj)
             % Call the base method.
-            prepareRun@PulsedProtocol(obj);
+            prepareRun@AutoRCProtocol(obj);
             
             % Open figure handlers.
             if obj.rigConfig.numMultiClampDevices() > 1
@@ -102,49 +102,52 @@ classdef vPulse < PulsedProtocol
         
         
         function prepareEpoch(obj, epoch)            
-            prepareEpoch@PulsedProtocol(obj, epoch);
-            
-            % Add main amp stimulus.
-            epoch.addStimulus(obj.amp, obj.ampStimulus());
-            
-            % Add secondary amp stimulus if the rig config is two amp.
-            if obj.rigConfig.numMultiClampDevices() > 1
-                epoch.addStimulus(obj.amp2, obj.amp2Stimulus());
+            prepareEpoch@AutoRCProtocol(obj, epoch);
+            if obj.addedRCEpoch
+                % Do nothing?
+            else
+                prepareEpoch@PulsedProtocol(obj, epoch);
+                % Add main amp stimulus.
+                epoch.addStimulus(obj.amp, obj.ampStimulus());
+                % Add secondary amp stimulus if the rig config is two amp.
+                if obj.rigConfig.numMultiClampDevices() > 1
+                    epoch.addStimulus(obj.amp2, obj.amp2Stimulus());
+                end
             end
         end
         
         
-        function queueEpoch(obj, epoch)            
-            % Call the base method to queue the actual epoch.
-            queueEpoch@PulsedProtocol(obj, epoch);
-            
-            % Queue the inter-pulse interval after queuing the epoch.
-            if obj.interpulseInterval > 0
-                obj.queueInterval(obj.interpulseInterval);
-            end
-        end
-        
-        
-        function keepQueuing = continueQueuing(obj)
-            % Check the base class method to make sure the user hasn't paused or stopped the protocol.
-            keepQueuing = continueQueuing@PulsedProtocol(obj);
-            
-            % Keep queuing until the requested number of averages have been queued.
-            if keepQueuing
-                keepQueuing = obj.numEpochsQueued < obj.numberOfAverages;
-            end
-        end
-        
-        
-        function keepGoing = continueRun(obj)
-            % Check the base class method to make sure the user hasn't paused or stopped the protocol.
-            keepGoing = continueRun@PulsedProtocol(obj);
-            
-            % Keep going until the requested number of averages have been completed.
-            if keepGoing
-                keepGoing = obj.numEpochsCompleted < obj.numberOfAverages;
-            end
-        end
+%         function queueEpoch(obj, epoch)            
+%             % Call the base method to queue the actual epoch.
+%             queueEpoch@PulsedProtocol(obj, epoch);
+%             
+%             % Queue the inter-pulse interval after queuing the epoch.
+%             if obj.interpulseInterval > 0
+%                 obj.queueInterval(obj.interpulseInterval);
+%             end
+%         end
+%         
+%         
+%         function keepQueuing = continueQueuing(obj)
+%             % Check the base class method to make sure the user hasn't paused or stopped the protocol.
+%             keepQueuing = continueQueuing@PulsedProtocol(obj);
+%             
+%             % Keep queuing until the requested number of averages have been queued.
+%             if keepQueuing
+%                 keepQueuing = obj.numEpochsQueued < obj.numberOfAverages;
+%             end
+%         end
+%         
+%         
+%         function keepGoing = continueRun(obj)
+%             % Check the base class method to make sure the user hasn't paused or stopped the protocol.
+%             keepGoing = continueRun@PulsedProtocol(obj);
+%             
+%             % Keep going until the requested number of averages have been completed.
+%             if keepGoing
+%                 keepGoing = obj.numEpochsCompleted < obj.numberOfAverages;
+%             end
+%         end
         
         
         function amp2 = get.amp2(obj)

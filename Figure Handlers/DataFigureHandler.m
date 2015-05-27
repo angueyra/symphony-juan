@@ -1,3 +1,4 @@
+
 % Property Descriptions:
 %
 % LineColor (ColorSpec)
@@ -13,8 +14,7 @@ classdef DataFigureHandler < FigureHandler
         plotHandle
         deviceName
         lineColor
-        windowPos=[5,425,1300,430]%[0,500,560,380]
-%         windowPos=[0,400,560,210]
+        windowPos
     end
     
     methods
@@ -39,7 +39,11 @@ classdef DataFigureHandler < FigureHandler
             obj = obj@FigureHandler(protocolPlugin, ip.Unmatched);
             obj.deviceName = deviceName;
             obj.lineColor = ip.Results.LineColor;
-            
+            if ispc %rig computer
+                obj.windowPos=[5,425,1300,430];%[0,500,560,380]
+            else %simulation mode
+                obj.windowPos=[0,400,560,210];
+            end
             if ~isempty(obj.deviceName)
                 set(obj.figureHandle, 'Name', [obj.protocolPlugin.displayName ': ' obj.deviceName ' ' obj.figureType]);
             end   

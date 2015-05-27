@@ -1,9 +1,9 @@
-classdef vPulseFamily < PulsedProtocol
+classdef vPulseFamily < AutoRCProtocol
     
     properties (Constant)
         identifier = 'edu.washington.rieke.PulseFamily'
         version = 4
-        displayName = 'Pulse Family'
+        displayName = 'vPulse Family'
     end
     
     properties
@@ -45,7 +45,7 @@ classdef vPulseFamily < PulsedProtocol
         
         function prepareRun(obj)
             % Call the base method.
-            prepareRun@PulsedProtocol(obj);
+            prepareRun@AutoRCProtocol(obj);
             
             % Open figure handlers.
             if obj.rigConfig.numMultiClampDevices() > 1
@@ -54,7 +54,7 @@ classdef vPulseFamily < PulsedProtocol
                 obj.openFigure('Dual Mean vs. Epoch', obj.amp, obj.amp2, 'EndPt', obj.prePts);
                 obj.openFigure('Dual Variance vs. Epoch', obj.amp, obj.amp2, 'EndPt', obj.prePts);
             else
-                obj.openFigure('Response', obj.amp);
+                obj.openFigure('Data', obj.amp);
                 obj.openFigure('Mean Response', obj.amp, 'GroupByParams', {'pulseSignal'});
                 obj.openFigure('Mean vs. Epoch', obj.amp, 'EndPt', obj.prePts);
                 obj.openFigure('Variance vs. Epoch', obj.amp, 'EndPt', obj.prePts);
@@ -109,40 +109,48 @@ classdef vPulseFamily < PulsedProtocol
         
         
         function prepareEpoch(obj, epoch)
-            prepareEpoch@PulsedProtocol(obj, epoch);
-            
-            % Add main amp stimulus.
-            pulseNum = mod(obj.numEpochsQueued, obj.pulsesInFamily) + 1;
-            [stim, pulseSignal] = obj.ampStimulus(pulseNum);
-            
-            epoch.addParameter('pulseSignal', pulseSignal);
-            epoch.addStimulus(obj.amp, stim);
-            
-            % Add secondary amp stimulus if the rig config is two amp.
-            if obj.rigConfig.numMultiClampDevices() > 1
-                epoch.addStimulus(obj.amp2, obj.amp2Stimulus());
+            prepareEpoch@AutoRCProtocol(obj, epoch);
+             if obj.addedRCEpoch
+                 % Do nothing?
+             else
+                 prepareEpoch@PulsedProtocol(obj, epoch);
+                 % Add main amp stimulus.
+                 pulseNum = mod(obj.numEpochsQueued, obj.pulsesInFamily) + 1;
+                 [stim, pulseSignal] = obj.ampStimulus(pulseNum);
+                 
+                 epoch.addParameter('pulseSignal', pulseSignal);
+                 epoch.addStimulus(obj.amp, stim);
+                 
+                 % Add secondary amp stimulus if the rig config is two amp.
+                 if obj.rigConfig.numMultiClampDevices() > 1
+                     epoch.addStimulus(obj.amp2, obj.amp2Stimulus());
+                 end
             end
         end
         
         
-        function queueEpoch(obj, epoch)
-            % Call the base method to queue the actual epoch.
-            queueEpoch@PulsedProtocol(obj, epoch);
-            
-            % Queue the inter-pulse interval after queuing the epoch.
-            if obj.interpulseInterval > 0
-                obj.queueInterval(obj.interpulseInterval);
-            end
-        end
-        
-        
+%         function queueEpoch(obj, epoch)
+%             % Call the base method to queue the actual epoch.
+%             queueEpoch@PulsedProtocol(obj, epoch);
+%             
+%             % Queue the inter-pulse interval after queuing the epoch.
+%             if obj.interpulseInterval > 0
+%                 obj.queueInterval(obj.interpulseInterval);
+%             end
+%         end
+%         
+%         
         function keepQueuing = continueQueuing(obj)
             % Check the base class method to make sure the user hasn't paused or stopped the protocol.
             keepQueuing = continueQueuing@PulsedProtocol(obj);
             
             % Keep queuing until the requested number of averages have been queued.
             if keepQueuing
-                keepQueuing = obj.numEpochsQueued < obj.numberOfAverages * obj.pulsesInFamily;
+                if obj.autoRC
+                    keepQueuing = obj.numEpochsQueued < obj.RCnumberOfAverages+(obj.numberOfAverages*obj.pulsesInFamily);
+                else
+                    keepQueuing = obj.numEpochsQueued < obj.numberOfAverages * obj.pulsesInFamily;
+                end
             end
         end
         
@@ -153,7 +161,11 @@ classdef vPulseFamily < PulsedProtocol
             
             % Keep going until the requested number of epochs is reached.
             if keepGoing
-                keepGoing = obj.numEpochsCompleted < obj.numberOfAverages * obj.pulsesInFamily;
+                if obj.autoRC
+                    keepGoing = obj.numEpochsCompleted < obj.RCnumberOfAverages+(obj.numberOfAverages*obj.pulsesInFamily);
+                else
+                    keepGoing = obj.numEpochsCompleted < obj.numberOfAverages * obj.pulsesInFamily;
+                end
             end
         end
         

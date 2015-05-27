@@ -67,6 +67,7 @@ classdef ledPulseAll < PulsedProtocol
         
         function prepareRun(obj)
             % Call the base method.
+%             prepareRun@AutoRCProtocol(obj);
             prepareRun@PulsedProtocol(obj);
             
             % Open figure handlers.
@@ -131,13 +132,16 @@ classdef ledPulseAll < PulsedProtocol
         
         
         function prepareEpoch(obj, epoch)
-            prepareEpoch@PulsedProtocol(obj, epoch);
-            
-            % Add LED stimulus.
-            epoch.addStimulus(obj.led1, obj.ledStimulus(obj.led1,1));
-            epoch.addStimulus(obj.led2, obj.ledStimulus(obj.led2,2));
-            epoch.addStimulus(obj.led3, obj.ledStimulus(obj.led3,3));
-            
+%             prepareEpoch@AutoRCProtocol(obj, epoch);
+%             if obj.addedRCEpoch
+%                 % Do nothing?
+%             else
+                prepareEpoch@PulsedProtocol(obj, epoch);
+                % Add LED stimulus.
+                epoch.addStimulus(obj.led1, obj.ledStimulus(obj.led1,1));
+                epoch.addStimulus(obj.led2, obj.ledStimulus(obj.led2,2));
+                epoch.addStimulus(obj.led3, obj.ledStimulus(obj.led3,3));
+%             end
         end
         
         

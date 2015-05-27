@@ -21,8 +21,7 @@ classdef MeanResponseFigureHandler < FigureHandler
         meanPlots   % array of structures to store the properties of each class of epoch.
         meanParamNames
         storedLineColor
-        windowPos=[5,5,1300,390];%[0,0,560,380];
-%         windowPos=[0,120,560,250]
+        windowPos
         lpf_freq=50;
     end
     
@@ -51,6 +50,11 @@ classdef MeanResponseFigureHandler < FigureHandler
             obj.deviceName = deviceName;
             obj.lineColor = ip.Results.LineColor;
             obj.storedLineColor = ip.Results.StoredLineColor;
+            if ispc %rig computer
+                obj.windowPos=[5,5,1300,390];%[0,0,560,380];
+            else %simulation mode
+                obj.windowPos=[0,120,560,250];
+            end
             
             if iscell(ip.Results.GroupByParams)
                 obj.meanParamNames = ip.Results.GroupByParams;
@@ -217,6 +221,7 @@ classdef MeanResponseFigureHandler < FigureHandler
             plots = obj.storedPlots();
             for i = 1:numel(plots)
                 set(plots(i).plotHandle, 'HandleVisibility', 'off');
+                keyboard
             end
             
             clearFigure@FigureHandler(obj);

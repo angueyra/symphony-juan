@@ -21,7 +21,7 @@ classdef MeanVsEpochFigureHandler < FigureHandler
         startPt
         endPt
         plotHandle
-        windowPos=[5,880,560,170];
+        windowPos
     end
     
     methods
@@ -40,6 +40,11 @@ classdef MeanVsEpochFigureHandler < FigureHandler
             obj.markerColor = ip.Results.MarkerColor;
             obj.startPt = ip.Results.StartPt;
             obj.endPt = ip.Results.EndPt;
+            if ispc %rig computer
+                obj.windowPos=[5,880,560,170];
+            else %simulation mode
+                obj.windowPos=[5,880,400,170];
+            end
             
             set(obj.figureHandle, 'Name', [obj.protocolPlugin.displayName ': ' obj.deviceName ' ' obj.figureType]);
             obj.moveWindow();
@@ -66,28 +71,48 @@ classdef MeanVsEpochFigureHandler < FigureHandler
         
         
         function handleEpoch(obj, epoch)
-            responseData = epoch.response(obj.deviceName);
-            
-            if obj.endPt == 0
-                average = mean(responseData(obj.startPt:end));
-            else
-                average = mean(responseData(obj.startPt:obj.endPt));
+            if ~epoch.containsParameter('RCepoch')%ignore AutoRC epochs
+                responseData = epoch.response(obj.deviceName);
+                
+                if obj.endPt == 0
+                    average = mean(responseData(obj.startPt:end));
+                else
+                    average = mean(responseData(obj.startPt:obj.endPt));
+                end
+                
+                averages = obj.storedAverages();
+                averages(end + 1) = average;
+                obj.storedAverages(averages);
+                
+                if isempty(obj.plotHandle)
+                    obj.plotHandle = plot(obj.axesHandle(), 1:length(averages), averages, 'o', ...
+                        'MarkerEdgeColor', obj.markerColor, ...
+                        'MarkerFaceColor', obj.markerColor);
+                    xlabel(obj.axesHandle(), 'epoch');
+                else
+                    set(obj.plotHandle, 'XData', 1:length(averages), 'YData', averages);
+                end
+                
+                set(obj.axesHandle(), 'XLim', [0.5 length(averages) + 0.5]);
+            else %this is an RCepoch
+                responseData = epoch.response(obj.deviceName);
+                average = mean(responseData(1:epoch.parameters.RCpreTime/1e3*epoch.parameters.sampleRate));
+                                
+                averages = obj.storedAverages();
+                averages(end + 1) = average;
+                obj.storedAverages(averages);
+                
+                if isempty(obj.plotHandle)
+                    obj.plotHandle = plot(obj.axesHandle(), 1:length(averages), averages, 'o', ...
+                        'MarkerEdgeColor', obj.markerColor, ...
+                        'MarkerFaceColor', obj.markerColor);
+                    xlabel(obj.axesHandle(), 'epoch');
+                else
+                    set(obj.plotHandle, 'XData', 1:length(averages), 'YData', averages);
+                end
+                
+                set(obj.axesHandle(), 'XLim', [0.5 length(averages) + 0.5]);
             end
-            
-            averages = obj.storedAverages();
-            averages(end + 1) = average;
-            obj.storedAverages(averages);
-            
-            if isempty(obj.plotHandle)
-                obj.plotHandle = plot(obj.axesHandle(), 1:length(averages), averages, 'o', ...
-                    'MarkerEdgeColor', obj.markerColor, ...
-                    'MarkerFaceColor', obj.markerColor);
-                xlabel(obj.axesHandle(), 'epoch');
-            else
-                set(obj.plotHandle, 'XData', 1:length(averages), 'YData', averages);
-            end
-            
-            set(obj.axesHandle(), 'XLim', [0.5 length(averages) + 0.5]);
         end
         
         

@@ -21,8 +21,7 @@ classdef AutoRCFigureHandler < FigureHandler
         meanPlots   % array of structures to store the properties of each class of epoch.
         meanParamNames
         storedLineColor
-%         windowPos=[858   288   300   150] % laptop
-        windowPos=[1320         305         364         200] %rig pc
+        windowPos
         lpf_freq=50;
     end
     
@@ -51,6 +50,11 @@ classdef AutoRCFigureHandler < FigureHandler
             obj.deviceName = deviceName;
             obj.lineColor = ip.Results.LineColor;
             obj.storedLineColor = ip.Results.StoredLineColor;
+            if ispc %rig computer
+                obj.windowPos=[1320,305,364,200];
+            else %simulation mode
+                obj.windowPos=[858,288,300,150];
+            end
             
             if iscell(ip.Results.GroupByParams)
                 obj.meanParamNames = ip.Results.GroupByParams;
@@ -135,7 +139,7 @@ classdef AutoRCFigureHandler < FigureHandler
                     meanPlot = {};
                     meanPlot.params = epochParams;
     %                 meanPlot.data = responseData;
-                    meanPlot.data = baselineSub(responseData,1,epoch.parameters.preTime/1e3*epoch.parameters.sampleRate);
+                    meanPlot.data = baselineSub(responseData,1,epoch.parameters.RCpreTime/1e3*epoch.parameters.sampleRate);
                     meanPlot.sampleRate = sampleRate;
                     meanPlot.units = units;
                     meanPlot.count = 1;                                              

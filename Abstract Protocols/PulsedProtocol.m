@@ -50,7 +50,7 @@ classdef PulsedProtocol < LiLabProtocol
 %             Add a stimulus to trigger the oscilliscope at the start of the epoch.
             if ~isempty(obj.rigConfig.deviceWithName('Oscilloscope_Trigger'))
                 p = PulseGenerator();
-                if obj.addedRCEpoch
+                if isprop(obj,'addedRCEpoch')&&obj.addedRCEpoch
                     p.preTime = 0;
                     p.stimTime = 1;
                     p.tailTime = obj.RCpreTime + obj.RCstimTime + obj.RCtailTime - 1;

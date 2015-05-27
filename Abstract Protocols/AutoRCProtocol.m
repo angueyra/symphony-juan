@@ -38,6 +38,8 @@ classdef AutoRCProtocol < PulsedProtocol
                 obj.addedRCEpoch = true;
 				% Open RC figure
                 obj.openFigure('AutoRC', obj.amp);
+            else
+                obj.addedRCEpoch = false;
 			end
         end
         
@@ -116,7 +118,11 @@ classdef AutoRCProtocol < PulsedProtocol
             keepQueuing = continueQueuing@PulsedProtocol(obj);
             % Keep queuing until the requested number of averages have been queued.
             if keepQueuing
-                keepQueuing = obj.numEpochsQueued < obj.RCnumberOfAverages+obj.numberOfAverages;
+                if obj.autoRC
+                    keepQueuing = obj.numEpochsQueued < obj.RCnumberOfAverages+obj.numberOfAverages;
+                else
+                    keepQueuing = obj.numEpochsQueued < obj.numberOfAverages;
+                end
             end
         end
         
@@ -127,7 +133,11 @@ classdef AutoRCProtocol < PulsedProtocol
             
             % Keep going until the requested number of averages have been completed.
             if keepGoing
-                keepGoing = obj.numEpochsCompleted < obj.RCnumberOfAverages+obj.numberOfAverages;
+                if obj.autoRC
+                    keepGoing = obj.numEpochsCompleted < obj.RCnumberOfAverages+obj.numberOfAverages;
+                else
+                    keepGoing = obj.numEpochsCompleted < obj.numberOfAverages;
+                end
             end
         end
         

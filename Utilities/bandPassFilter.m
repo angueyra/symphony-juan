@@ -1,4 +1,4 @@
-function Xfilt = BandPassFilter(X,Flow,Fhigh,SampleInterval)
+function Xfilt = bandPassFilter(X,Flow,Fhigh,SampleInterval)
 L = size(X,2);
 if L == 1 %flip if given a column vector
     X=X'; 

@@ -21,7 +21,7 @@ classdef VarianceVsEpochFigureHandler < FigureHandler
         startPt
         endPt
         plotHandle
-        windowPos=[590,880,560,170];
+        windowPos
     end
     
     methods
@@ -40,6 +40,11 @@ classdef VarianceVsEpochFigureHandler < FigureHandler
             obj.markerColor = ip.Results.MarkerColor;
             obj.startPt = ip.Results.StartPt;
             obj.endPt = ip.Results.EndPt;
+            if ispc %rig computer
+                obj.windowPos=[590,880,560,170];
+            else %simulation mode
+                obj.windowPos=[405,880,400,170];
+            end
             
             set(obj.figureHandle, 'Name', [obj.protocolPlugin.displayName ': ' obj.deviceName ' ' obj.figureType]);
             obj.moveWindow();
@@ -66,28 +71,49 @@ classdef VarianceVsEpochFigureHandler < FigureHandler
         
         
         function handleEpoch(obj, epoch)
-            responseData = epoch.response(obj.deviceName);
-            
-            if obj.endPt == 0
-                variance = var(responseData(obj.startPt:end));
+            if ~epoch.containsParameter('RCepoch')%ignore AutoRC epochs
+                responseData = epoch.response(obj.deviceName);
+                
+                if obj.endPt == 0
+                    variance = var(responseData(obj.startPt:end));
+                else
+                    variance = var(responseData(obj.startPt:obj.endPt));
+                end
+                
+                variances = obj.storedVariances();
+                variances(end + 1) = variance;
+                obj.storedVariances(variances);
+                
+                if isempty(obj.plotHandle)
+                    obj.plotHandle = plot(obj.axesHandle(), 1:length(variances), variances, 'o', ...
+                        'MarkerEdgeColor', obj.markerColor, ...
+                        'MarkerFaceColor', obj.markerColor);
+                    xlabel(obj.axesHandle(), 'epoch');
+                else
+                    set(obj.plotHandle, 'XData', 1:length(variances), 'YData', variances);
+                end
+                
+                set(obj.axesHandle(), 'XLim', [0.5 length(variances) + 0.5]);
             else
-                variance = var(responseData(obj.startPt:obj.endPt));
+                responseData = epoch.response(obj.deviceName);
+                variance = (responseData(1:epoch.parameters.RCpreTime/1e3*epoch.parameters.sampleRate));
+                
+                
+                variances = obj.storedVariances();
+                variances(end + 1) = variance;
+                obj.storedVariances(variances);
+                
+                if isempty(obj.plotHandle)
+                    obj.plotHandle = plot(obj.axesHandle(), 1:length(variances), variances, 'o', ...
+                        'MarkerEdgeColor', obj.markerColor, ...
+                        'MarkerFaceColor', obj.markerColor);
+                    xlabel(obj.axesHandle(), 'epoch');
+                else
+                    set(obj.plotHandle, 'XData', 1:length(variances), 'YData', variances);
+                end
+                
+                set(obj.axesHandle(), 'XLim', [0.5 length(variances) + 0.5]);
             end
-            
-            variances = obj.storedVariances();
-            variances(end + 1) = variance;
-            obj.storedVariances(variances);
-            
-            if isempty(obj.plotHandle)
-                obj.plotHandle = plot(obj.axesHandle(), 1:length(variances), variances, 'o', ...
-                    'MarkerEdgeColor', obj.markerColor, ...
-                    'MarkerFaceColor', obj.markerColor);
-                xlabel(obj.axesHandle(), 'epoch');
-            else
-                set(obj.plotHandle, 'XData', 1:length(variances), 'YData', variances);
-            end
-            
-            set(obj.axesHandle(), 'XLim', [0.5 length(variances) + 0.5]);
         end
         
         
