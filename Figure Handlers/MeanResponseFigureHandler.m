@@ -221,7 +221,6 @@ classdef MeanResponseFigureHandler < FigureHandler
             plots = obj.storedPlots();
             for i = 1:numel(plots)
                 set(plots(i).plotHandle, 'HandleVisibility', 'off');
-                keyboard
             end
             
             clearFigure@FigureHandler(obj);

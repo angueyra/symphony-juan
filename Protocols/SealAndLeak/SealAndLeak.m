@@ -14,7 +14,7 @@ classdef SealAndLeak < PulsedProtocol
         stimTime = 30
         tailTime = 15
         pulseAmplitude = 5
-        leakAmpHoldSignal = -60
+        leakAmpHoldSignal = -40
     end
     
     properties (Hidden, Dependent)
