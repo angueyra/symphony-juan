@@ -30,8 +30,8 @@ classdef MeanResponseFigureHandler < FigureHandler
         function obj = MeanResponseFigureHandler(protocolPlugin, deviceName, varargin)           
             ip = inputParser;
             ip.KeepUnmatched = true;
-            ip.addParamValue('LineColor', [0 0 1], @(x)ischar(x) || isvector(x));
-            ip.addParamValue('StoredLineColor', [0.75 0 0], @(x)ischar(x) || isvector(x));
+            ip.addParamValue('LineColor', [.5 .2 .75], @(x)ischar(x) || isvector(x));
+            ip.addParamValue('StoredLineColor', [0 0 0], @(x)ischar(x) || isvector(x));
             ip.addParamValue('GroupByParams', {}, @(x)iscell(x) || ischar(x));
             
             % Allow deviceName to be an optional parameter.
