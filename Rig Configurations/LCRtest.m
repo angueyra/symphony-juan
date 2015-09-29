@@ -1,9 +1,9 @@
-classdef OneAmp < AxopatchRigConfiguration
+classdef LCRtest < AxopatchRigConfiguration
 % Created Nov_2014, Angueyra
 % Configuration of Angueyra's Rig in Li Lab
 % Single Amp and 3 LEDs
     properties (Constant)
-        displayName = 'OneAmp'
+        displayName = 'LightCrafting'
     end
     
     methods
@@ -18,21 +18,14 @@ classdef OneAmp < AxopatchRigConfiguration
             obj.addDevice('LED_455','ANALOG_OUT.3','');
             
             % Temp. Control
-            obj.addDevice('Temp','','ANALOG_IN.6');
-                      
-            % Oscilloscope_Trigger
-            obj.addDevice('Oscilloscope_Trigger','DIGITAL_OUT.0','');
-            
+%             obj.addDevice('Temp','','ANALOG_IN.6');
             % Stage.
             micronsPerPixel = 1.6;
             obj.addLcrStage(micronsPerPixel);
+                      
+            % Oscilloscope_Trigger
+%             obj.addDevice('Oscilloscope_Trigger','DIGITAL_OUT.0','');
             
-%             % Switchbox
-%             obj.addDevice('Run','','DIGITAL_IN.8');
-%             obj.addDevice('Save','','DIGITAL_IN.9');
-%             obj.addDevice('Update','','DIGITAL_IN.10');
-%             obj.addDevice('CellParams','','DIGITAL_IN.11');
-%             obj.addDevice('RandomSeed','','DIGITAL_IN.13');
 
 
 % % %             % LEDs.
