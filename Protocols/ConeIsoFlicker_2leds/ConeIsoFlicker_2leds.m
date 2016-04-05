@@ -1,25 +1,22 @@
-classdef ConeIsoFlicker < PulsedProtocol
+classdef ConeIsoFlicker_2leds < PulsedProtocol
     
     properties (Constant)
-        identifier = 'angueyra.ConeIsoFlicker'
+        identifier = 'angueyra.ConeIsoFlicker_2leds'
         version = 1
-        displayName = 'ConeIsoFlicker'
+        displayName = 'ConeIsoFlicker_2leds'
     end
     
     properties
         led1
         led2
-        led3
         amp
-        preTime = 15
-        stimTime = 30
-        tailTime = 15
-        led1Amp = 8
-        led1Mean = 4
+        preTime = 100
+        stimTime = 200
+        tailTime = 100
+        led1Amp = 2
+        led1Mean = 2
         led2Amp = -2
         led2Mean = 4
-        led3Amp = 0
-        led3Mean = 0
     end
     
     properties (Dependent, SetAccess = private)
@@ -37,7 +34,7 @@ classdef ConeIsoFlicker < PulsedProtocol
             p = parameterProperty@PulsedProtocol(obj, parameterName);
             
             switch parameterName
-                case {'led1', 'led2','led3'}
+                case {'led1', 'led2'}
                     p.defaultValue = obj.rigConfig.deviceNames('led');
                     p.description = 'select corresponding LED from rig configuration';
                 case {'led1Amp', 'led1Mean'}
@@ -49,12 +46,6 @@ classdef ConeIsoFlicker < PulsedProtocol
                 case {'led2Amp', 'led2Mean'}
                     % Support both calibrated and non-calibrated LEDs.
                     p.units = char(obj.rigConfig.deviceWithName(obj.led2).Background.DisplayUnit);
-                    if p.units == Symphony.Core.Measurement.NORMALIZED
-                        p.units = 'norm. [0-1]';
-                    end
-                case {'led3Amp', 'led3Mean'}
-                    % Support both calibrated and non-calibrated LEDs.
-                    p.units = char(obj.rigConfig.deviceWithName(obj.led3).Background.DisplayUnit);
                     if p.units == Symphony.Core.Measurement.NORMALIZED
                         p.units = 'norm. [0-1]';
                     end
@@ -76,7 +67,7 @@ classdef ConeIsoFlicker < PulsedProtocol
         
         function stim = ledStimulus(obj,LED,cnt)
             % Main LED stimulus.
-            p = PulseGenerator();
+            p = RepeatingPulseGenerator();
             
             p.preTime = obj.preTime;
             p.stimTime = obj.stimTime;
@@ -91,10 +82,6 @@ classdef ConeIsoFlicker < PulsedProtocol
                 case 2
                     p.mean = obj.led2Mean;
                     p.amplitude = obj.led2Amp;
-                    p.units = char(obj.rigConfig.deviceWithName(LED).Background.DisplayUnit);
-                case 3
-                    p.mean = obj.led3Mean;
-                    p.amplitude = obj.led3Amp;
                     p.units = char(obj.rigConfig.deviceWithName(LED).Background.DisplayUnit);
             end
             
@@ -123,7 +110,7 @@ classdef ConeIsoFlicker < PulsedProtocol
             prepareRun@PulsedProtocol(obj);
             
             % Open mode indicating figure handler.
-            obj.figureHandler = obj.openFigure('Custom', 'Name', 'Current Mode', 'ID', 'sealLeakMode', 'UpdateCallback', @null);
+            obj.figureHandler = obj.openFigure('Custom', 'Name', 'Current Mode', 'ID', 'InfConeIso', 'UpdateCallback', @null);
             axesHandle = obj.figureHandler.axesHandle();
             cla(axesHandle);
             set(axesHandle, 'XTick', [], 'YTick', []);
@@ -132,7 +119,6 @@ classdef ConeIsoFlicker < PulsedProtocol
             % Set led mean.
             obj.setDeviceBackground(obj.led1, obj.led1Mean);
             obj.setDeviceBackground(obj.led2, obj.led2Mean);
-            obj.setDeviceBackground(obj.led3, obj.led3Mean);
         end
         
         
@@ -169,7 +155,6 @@ classdef ConeIsoFlicker < PulsedProtocol
             % Add the led pulse stimulus to the epoch.         
             epoch.addStimulus(obj.led1, obj.ledStimulus(obj.led1,1));
             epoch.addStimulus(obj.led2, obj.ledStimulus(obj.led2,2));
-            epoch.addStimulus(obj.led3, obj.ledStimulus(obj.led3,3));
         end
         
         
@@ -194,7 +179,7 @@ classdef ConeIsoFlicker < PulsedProtocol
             if ~isempty(axesHandle)            
                 cla(axesHandle);
                 set(axesHandle, 'XTick', [], 'YTick', []);
-                text(0.5, 0.5, [obj.led ' next'], 'FontSize', 30, 'HorizontalAlignment', 'center', 'Parent', axesHandle);
+                text(0.5, 0.5, [obj.led1 ' next'], 'FontSize', 30, 'HorizontalAlignment', 'center', 'Parent', axesHandle);
             end
         end
 

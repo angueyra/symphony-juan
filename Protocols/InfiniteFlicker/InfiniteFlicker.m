@@ -9,10 +9,10 @@ classdef InfiniteFlicker < PulsedProtocol
     properties
         led
         amp
-        preTime = 15
-        stimTime = 30
-        tailTime = 15
-        ledAmp = 5
+        preTime = 100
+        stimTime = 200
+        tailTime = 100
+        ledAmp = 2
         ledMean = 0
     end
     
@@ -65,7 +65,7 @@ classdef InfiniteFlicker < PulsedProtocol
             p.amplitude = obj.ledAmp;
             p.mean = obj.ledMean;
             p.sampleRate = obj.sampleRate;
-            p.units = char(obj.rigConfig.deviceWithName(obj.amp).Background.DisplayUnit);
+            p.units = char(obj.rigConfig.deviceWithName(obj.led).Background.DisplayUnit);
             
             stim = p.generate();
         end   
@@ -89,11 +89,12 @@ classdef InfiniteFlicker < PulsedProtocol
             prepareRun@PulsedProtocol(obj);
             
             % Open mode indicating figure handler.
-            obj.figureHandler = obj.openFigure('Custom', 'Name', 'Current Mode', 'ID', 'sealLeakMode', 'UpdateCallback', @null);
+            obj.figureHandler = obj.openFigure('Custom', 'Name', 'Current Mode', 'ID', 'InfFlicker', 'UpdateCallback', @null);
             axesHandle = obj.figureHandler.axesHandle();
             cla(axesHandle);
             set(axesHandle, 'XTick', [], 'YTick', []);
-            text(0.5, 0.5, [obj.led ' running...'], 'FontSize', 48, 'HorizontalAlignment', 'center', 'Parent', axesHandle);
+            text(0.5, 0.5, [sprintf('Flicker running:\n') strrep(obj.led,'_','')],...
+                'FontSize', 30, 'HorizontalAlignment', 'center', 'Parent', axesHandle);
             
             % Set led mean.
             obj.setDeviceBackground(obj.led, obj.ledMean);
@@ -157,7 +158,7 @@ classdef InfiniteFlicker < PulsedProtocol
             if ~isempty(axesHandle)            
                 cla(axesHandle);
                 set(axesHandle, 'XTick', [], 'YTick', []);
-                text(0.5, 0.5, [obj.led ' next'], 'FontSize', 48, 'HorizontalAlignment', 'center', 'Parent', axesHandle);
+                text(0.5, 0.5, [sprintf('Next:\n') strrep(obj.led,'_','')], 'FontSize', 30, 'HorizontalAlignment', 'center', 'Parent', axesHandle);
             end
         end
 

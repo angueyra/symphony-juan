@@ -2,7 +2,7 @@
 % Created Apr_2015
 % Juan Angueyra (angueyra@nih.gov)
 
-classdef SealAndLeak < Module
+classdef SealAndLeakModule < Module
     
     properties (Constant)
         displayName = 'SealAndLeak Control'
@@ -16,7 +16,7 @@ classdef SealAndLeak < Module
     
     methods
         
-        function obj = SealAndLeak(symphonyUI)
+        function obj = SealAndLeakModule(symphonyUI)
             obj = obj@Module(symphonyUI);
             
             obj.rigConfigChanged = addlistener(symphonyUI, 'ChangedRigConfig', @(src,evt)obj.setSL());
