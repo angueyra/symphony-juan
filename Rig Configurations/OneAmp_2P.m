@@ -17,12 +17,12 @@ classdef OneAmp_2P < AxopatchRigConfiguration
             obj.addDevice('mxLED_Amber','ANALOG_OUT.3','');
             
             % Temp. Control
-            obj.addDevice('Temp','','ANALOG_IN.4');
+            obj.addDevice('Temp','','ANALOG_IN.7');
             
 %             % Oscilloscope_Trigger
-%             obj.addDevice('Oscilloscope_Trigger','DIGITAL_OUT.0','');
+            obj.addDevice('Oscilloscope_Trigger','DIGITAL_OUT.0','');
             % Imaging_Trigger
-            obj.addDevice('Imaging_Trigger','DIGITAL_OUT.0','');
+%            obj.addDevice('Imaging_Trigger','DIGITAL_OUT.0','');
             
 
 % % %             % LEDs.

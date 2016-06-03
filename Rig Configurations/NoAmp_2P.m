@@ -19,8 +19,8 @@ classdef NoAmp_2P < AxopatchRigConfiguration
             % Imaging frame clocl
             obj.addDevice('Frames','','DIGITAL_IN.1');
                  
-            % Imaging_Trigger
-            obj.addDevice('Imaging_Trigger','DIGITAL_OUT.0','');
+            % Trigger
+            obj.addDevice('Oscilloscope_Trigger','DIGITAL_OUT.0','');
             
           
 
