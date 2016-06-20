@@ -14,9 +14,9 @@ classdef NoAmp_2P < AxopatchRigConfiguration
             obj.addDevice('mxLED_Amber','ANALOG_OUT.3','');
             
             % Temp. Control
-            obj.addDevice('Temp','','ANALOG_IN.4');
+            obj.addDevice('Temp','','ANALOG_IN.7');
             
-            % Imaging frame clocl
+            % Imaging frame clock
             obj.addDevice('Frames','','DIGITAL_IN.1');
                  
             % Trigger

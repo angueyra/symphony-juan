@@ -51,7 +51,7 @@ classdef MeanResponseFigureHandler < FigureHandler
             obj.lineColor = ip.Results.LineColor;
             obj.storedLineColor = ip.Results.StoredLineColor;
             if ispc %rig computer
-                obj.windowPos=[5,5,1300,390];%[0,0,560,380];
+                obj.windowPos=[1080,10,400,250];%[5,5,1300,390];%[0,0,560,380];
             else %simulation mode
                 obj.windowPos=[0,120,560,250];
             end

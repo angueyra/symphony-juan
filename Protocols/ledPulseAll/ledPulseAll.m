@@ -74,14 +74,14 @@ classdef ledPulseAll < PulsedProtocol
             if obj.rigConfig.numMultiClampDevices() > 1
                 obj.openFigure('Dual Response', obj.amp, obj.amp2);
                 obj.openFigure('Dual Mean Response', obj.amp, obj.amp2);
-                obj.openFigure('Dual Mean vs. Epoch', obj.amp, obj.amp2, 'EndPt', obj.prePts);
-                obj.openFigure('Dual Variance vs. Epoch', obj.amp, obj.amp2, 'EndPt', obj.prePts);
+%                 obj.openFigure('Dual Mean vs. Epoch', obj.amp, obj.amp2, 'EndPt', obj.prePts);
+%                 obj.openFigure('Dual Variance vs. Epoch', obj.amp, obj.amp2, 'EndPt', obj.prePts);
             else
                 obj.openFigure('Data', obj.amp);
 %                 obj.openFigure('Response', 'LED_455');
                 obj.openFigure('Mean Response', obj.amp);
-                obj.openFigure('Mean vs. Epoch', obj.amp, 'EndPt', obj.prePts);
-                obj.openFigure('Variance vs. Epoch', obj.amp, 'EndPt', obj.prePts);
+%                 obj.openFigure('Mean vs. Epoch', obj.amp, 'EndPt', obj.prePts);
+%                 obj.openFigure('Variance vs. Epoch', obj.amp, 'EndPt', obj.prePts);
             end
             
             % Set LED mean.

@@ -66,7 +66,7 @@ classdef LiLabProtocol < SymphonyProtocol
                 [response, ~, units] = epoch.response(char(device.Name));
                 
                 if strcmp(units, 'V')
-                    % Temperature readout from Bioptech Delta T4 Culture dish controller is
+                    % Temperature readout from Bioptechs Delta T4/T5 Culture dish controller is
                     % 100 mV/degree C.
                     temp = mean(response) * 1000 * (1/100);
                     temp = round(temp * 10) / 10;

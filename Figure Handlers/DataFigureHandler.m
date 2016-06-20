@@ -40,7 +40,7 @@ classdef DataFigureHandler < FigureHandler
             obj.deviceName = deviceName;
             obj.lineColor = ip.Results.LineColor;
             if ispc %rig computer
-                obj.windowPos=[5,425,1300,430];%[0,500,560,380]
+                obj.windowPos=[1510,10,400,250];%[5,425,1300,430];%[0,500,560,380]
             else %simulation mode
                 obj.windowPos=[0,400,560,210];
             end

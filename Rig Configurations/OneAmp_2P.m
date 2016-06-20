@@ -19,6 +19,9 @@ classdef OneAmp_2P < AxopatchRigConfiguration
             % Temp. Control
             obj.addDevice('Temp','','ANALOG_IN.7');
             
+%             % Frame Monitor
+%             obj.addDevice('Frames','','DIGITAL_IN.0');
+            
 %             % Oscilloscope_Trigger
             obj.addDevice('Oscilloscope_Trigger','DIGITAL_OUT.0','');
             % Imaging_Trigger
